@@ -22,27 +22,29 @@ public class BukkitDB {
         return poolOptions;
     }
 
-    public static Database createHikariDatabase(Plugin plugin, @NonNull String user, @NonNull String pass, @NonNull String db, @NonNull String hostAndPort) {
-        return createHikariDatabase(plugin, getRecommendedOptions(plugin, user, pass, db, hostAndPort));
+    public static Database createHikariDatabase(Plugin plugin, @NonNull String user, @NonNull String pass, @NonNull String db, @NonNull String hostAndPort, boolean autoClose) {
+        return createHikariDatabase(plugin, getRecommendedOptions(plugin, user, pass, db, hostAndPort), autoClose);
     }
 
-    public static Database createHikariDatabase(Plugin plugin, PooledDatabaseOptions options) {
-        return createHikariDatabase(plugin, options, true);
+    public static Database createHikariDatabase(Plugin plugin, PooledDatabaseOptions options, boolean autoClose) {
+        return createHikariDatabase(plugin, options, true, autoClose);
     }
 
-    public static Database createHikariDatabase(Plugin plugin, PooledDatabaseOptions options, boolean setGlobal) {
+    public static Database createHikariDatabase(Plugin plugin, PooledDatabaseOptions options, boolean setGlobal, boolean autoClose) {
         HikariPooledDatabase db = new HikariPooledDatabase(options);
         if (setGlobal) {
             DB.setGlobalDatabase(db);
         }
-        plugin.getServer().getPluginManager().registerEvents(new Listener() {
-            @EventHandler(ignoreCancelled = true)
-            public void onPluginDisable(PluginDisableEvent event) {
-                if (event.getPlugin() == plugin) {
-                    db.close();
+        if (autoClose) {
+            plugin.getServer().getPluginManager().registerEvents(new Listener() {
+                @EventHandler(ignoreCancelled = true)
+                public void onPluginDisable(PluginDisableEvent event) {
+                    if (event.getPlugin() == plugin) {
+                        db.close();
+                    }
                 }
-            }
-        }, plugin);
+            }, plugin);
+        }
         return db;
     }
 

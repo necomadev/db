@@ -49,12 +49,12 @@ public class HikariPooledDatabase extends BaseDatabase {
         }
 
         config.setConnectionTestQuery("SELECT 1");
-        config.setInitializationFailFast(true);
         config.setMinimumIdle(poolOptions.minIdleConnections);
         config.setMaximumPoolSize(poolOptions.maxConnections);
+        config.setLeakDetectionThreshold(10 * 1000);
+        config.setTransactionIsolation(options.defaultIsolationLevel);
 
         HikariDataSource pooledDataSource = new HikariDataSource(config);
-        pooledDataSource.setTransactionIsolation(options.defaultIsolationLevel);
         dataSource = pooledDataSource;
     }
 
