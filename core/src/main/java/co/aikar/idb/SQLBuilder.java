@@ -26,6 +26,12 @@ public class SQLBuilder implements AutoCloseable {
         return statement.toString();
     }
 
+    public SQLBuilder createTable(Table table, boolean ifNotExists) {
+        statement.append("CREATE TABLE").append(ifNotExists ? " IF NOT EXISTS " : " ").append(table.getName())
+                .append("(").append(table.getTableAttributes()).append(")");
+        return this;
+    }
+
     public SQLBuilder select(Table table, String columns) {
         statement.append("SELECT ").append(columns).append(" FROM ").append(table);
         return this;

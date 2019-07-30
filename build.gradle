@@ -75,16 +75,16 @@ subprojects {
         dependsOn uploadArchives
     }
 
-    if(project.hasProperty('aikarRepoUser') && project.hasProperty('aikarRepoPass')) {
+    if(project.hasProperty('nexusUser') && project.hasProperty('nexusPass')) {
         uploadArchives {
             repositories {
                 mavenDeployer {
-                    repository(url: 'https://repo.aikar.co/content/repositories/aikar-snapshots/') {
-                        authentication(userName: aikarRepoUser, password: aikarRepoPass)
+                    repository(url: 'http://54.37.204.9:8081/repository/pvpgym/') {
+                        authentication(userName: nexusUser, password: nexusPass)
                     }
 
-                    snapshotRepository(url: 'https://repo.aikar.co/content/repositories/aikar-snapshots/') {
-                        authentication(userName: aikarRepoUser, password: aikarRepoPass)
+                    snapshotRepository(url: 'http://54.37.204.9:8081/repository/pvpgym/') {
+                        authentication(userName: nexusUser, password: nexusPass)
                     }
                 }
             }
