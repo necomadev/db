@@ -58,6 +58,11 @@ public class SQLBuilder implements AutoCloseable {
         return this;
     }
 
+    public SQLBuilder onDuplicateKeyUpdate(String assignment) {
+        statement.append(" ON DUPLICATE KEY UPDATE ").append(assignment);
+        return this;
+    }
+
     public SQLBuilder update(Table table, String... columns) {
         statement.append("UPDATE ").append(table).append(" SET ");
         for (int i = 0; i < columns.length; i++) {
