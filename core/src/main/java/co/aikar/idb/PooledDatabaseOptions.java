@@ -11,6 +11,7 @@ import java.util.Map;
 public class PooledDatabaseOptions {
     @Builder.Default int minIdleConnections = 3;
     @Builder.Default int maxConnections = 5;
+    @Builder.Default int connectionTimeout = 30;
     Map<String, Object> dataSourceProperties;
     @NonNull DatabaseOptions options;
 

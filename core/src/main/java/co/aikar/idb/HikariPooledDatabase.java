@@ -52,6 +52,7 @@ public class HikariPooledDatabase extends BaseDatabase {
         config.setMinimumIdle(poolOptions.minIdleConnections);
         config.setMaximumPoolSize(poolOptions.maxConnections);
         config.setLeakDetectionThreshold(10 * 1000);
+        config.setConnectionTimeout(poolOptions.connectionTimeout);
         config.setTransactionIsolation(options.defaultIsolationLevel);
 
         HikariDataSource pooledDataSource = new HikariDataSource(config);
