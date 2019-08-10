@@ -51,7 +51,7 @@ public class HikariPooledDatabase extends BaseDatabase {
         config.setConnectionTestQuery("SELECT 1");
         config.setMinimumIdle(poolOptions.minIdleConnections);
         config.setMaximumPoolSize(poolOptions.maxConnections);
-        config.setLeakDetectionThreshold(10 * 1000);
+        config.setLeakDetectionThreshold(30 * 1000);
         config.setConnectionTimeout(poolOptions.connectionTimeout);
         config.setTransactionIsolation(options.defaultIsolationLevel);
 

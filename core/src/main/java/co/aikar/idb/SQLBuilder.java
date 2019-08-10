@@ -33,12 +33,12 @@ public class SQLBuilder implements AutoCloseable {
     }
 
     public SQLBuilder select(Table table, String columns) {
-        statement.append("SELECT ").append(columns).append(" FROM ").append(table);
+        statement.append("SELECT ").append(columns).append(" FROM ").append(table.getName());
         return this;
     }
 
     public SQLBuilder insert(Table table, String columns) {
-        statement.append("INSERT INTO ").append(table);
+        statement.append("INSERT INTO ").append(table.getName());
         if (!columns.isEmpty()) {
             statement.append(" (").append(columns).append(")");
         }
@@ -46,7 +46,7 @@ public class SQLBuilder implements AutoCloseable {
     }
 
     public SQLBuilder insertIgnore(Table table, String columns) {
-        statement.append("INSERT IGNORE INTO ").append(table);
+        statement.append("INSERT IGNORE INTO ").append(table.getName());
         if (!columns.isEmpty()) {
             statement.append(" (").append(columns).append(")");
         }
@@ -64,7 +64,7 @@ public class SQLBuilder implements AutoCloseable {
     }
 
     public SQLBuilder update(Table table, String... columns) {
-        statement.append("UPDATE ").append(table).append(" SET ");
+        statement.append("UPDATE ").append(table.getName()).append(" SET ");
         for (int i = 0; i < columns.length; i++) {
             String column = columns[i];
             statement.append(column).append(" = ?");
@@ -77,7 +77,7 @@ public class SQLBuilder implements AutoCloseable {
     }
 
     public SQLBuilder updateRaw(Table table) {
-        statement.append("UPDATE ").append(table);
+        statement.append("UPDATE ").append(table.getName());
         return this;
     }
 
@@ -87,7 +87,7 @@ public class SQLBuilder implements AutoCloseable {
     }
 
     public SQLBuilder delete(Table table) {
-        statement.append("DELETE FROM ").append(table);
+        statement.append("DELETE FROM ").append(table.getName());
         return this;
     }
 
@@ -126,12 +126,12 @@ public class SQLBuilder implements AutoCloseable {
     }
 
     public SQLBuilder join(Table table, String condition) {
-        statement.append(" JOIN ").append(table).append(" ON ").append(condition);
+        statement.append(" JOIN ").append(table.getName()).append(" ON ").append(condition);
         return this;
     }
 
     public SQLBuilder leftJoin(Table table, String condition) {
-        statement.append(" LEFT JOIN ").append(table).append(" ON ").append(condition);
+        statement.append(" LEFT JOIN ").append(table.getName()).append(" ON ").append(condition);
         return this;
     }
 
