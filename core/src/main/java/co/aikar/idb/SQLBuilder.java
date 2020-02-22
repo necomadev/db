@@ -1,11 +1,10 @@
 package co.aikar.idb;
 
+import co.aikar.idb.schema.Column;
+
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.util.StringJoiner;
 
 public class SQLBuilder implements AutoCloseable {
 
@@ -32,23 +31,37 @@ public class SQLBuilder implements AutoCloseable {
         return this;
     }
 
-    public SQLBuilder select(Table table, String columns) {
-        statement.append("SELECT ").append(columns).append(" FROM ").append(table.getName());
+    public String getColumnsAsString(Column<?>... columns) {
+        String columnQuery;
+        if (columns.length == 0) {
+            columnQuery = "*";
+        } else {
+            StringJoiner joiner = new StringJoiner(",");
+            for (Column<?> column : columns) {
+                joiner.add(column.getName());
+            }
+            columnQuery = joiner.toString();
+        }
+        return columnQuery;
+    }
+
+    public SQLBuilder select(Table table, Column<?>... columns) {
+        statement.append("SELECT ").append(getColumnsAsString(columns)).append(" FROM ").append(table.getName());
         return this;
     }
 
-    public SQLBuilder insert(Table table, String columns) {
+    public SQLBuilder insert(Table table, Column<?>... columns) {
         statement.append("INSERT INTO ").append(table.getName());
-        if (!columns.isEmpty()) {
-            statement.append(" (").append(columns).append(")");
+        if (columns.length > 0) {
+            statement.append(" (").append(getColumnsAsString(columns)).append(")");
         }
         return this;
     }
 
-    public SQLBuilder insertIgnore(Table table, String columns) {
+    public SQLBuilder insertIgnore(Table table, Column<?>... columns) {
         statement.append("INSERT IGNORE INTO ").append(table.getName());
-        if (!columns.isEmpty()) {
-            statement.append(" (").append(columns).append(")");
+        if (columns.length > 0) {
+            statement.append(" (").append(getColumnsAsString(columns)).append(")");
         }
         return this;
     }
@@ -63,10 +76,10 @@ public class SQLBuilder implements AutoCloseable {
         return this;
     }
 
-    public SQLBuilder update(Table table, String... columns) {
+    public SQLBuilder update(Table table, Column<?>... columns) {
         statement.append("UPDATE ").append(table.getName()).append(" SET ");
         for (int i = 0; i < columns.length; i++) {
-            String column = columns[i];
+            String column = columns[i].getName();
             statement.append(column).append(" = ?");
 
             if (i + 1 < columns.length) {
@@ -98,14 +111,26 @@ public class SQLBuilder implements AutoCloseable {
         return this;
     }
 
+    public SQLBuilder whereColumnIs(Column<?> column) {
+        return where(column.getName() + " = ?");
+    }
+
     public SQLBuilder and(String condition) {
         statement.append(" AND ").append(condition);
         return this;
     }
 
+    public SQLBuilder andColumnIs(Column<?> column) {
+        return and(column.getName() + " = ?");
+    }
+
     public SQLBuilder or(String condition) {
         statement.append(" OR ").append(condition);
         return this;
+    }
+
+    public SQLBuilder orColumnIs(Column<?> column) {
+        return or(column.getName() + " = ?");
     }
 
     public SQLBuilder in(String values) {
@@ -115,8 +140,8 @@ public class SQLBuilder implements AutoCloseable {
         return this;
     }
 
-    public SQLBuilder orderBy(String column, boolean ascending) {
-        statement.append(" ORDER BY ").append(column).append(ascending ? " ASC" : " DESC");
+    public SQLBuilder orderBy(Column<?> column, boolean ascending) {
+        statement.append(" ORDER BY ").append(column.getName()).append(ascending ? " ASC" : " DESC");
         return this;
     }
 
@@ -135,8 +160,8 @@ public class SQLBuilder implements AutoCloseable {
         return this;
     }
 
-    public SQLBuilder incrInteger(String field, int amount) {
-        statement.append(field).append(" = ").append(field).append(" + ").append(amount);
+    public SQLBuilder incrInteger(Column<?> column, int amount) {
+        statement.append(column.getName()).append(" = ").append(column.getName()).append(" + ").append(amount);
         return this;
     }
 
@@ -157,9 +182,7 @@ public class SQLBuilder implements AutoCloseable {
         if (ps == null) {
             createStatement();
         }
-        for (int i = 0; i < params.length; i++) {
-            getPreparedStatement().setObject(i + 1, params[i]);
-        }
+        fillParams(params);
         ps.addBatch();
         return this;
     }
@@ -267,6 +290,18 @@ public class SQLBuilder implements AutoCloseable {
 
     public Timestamp getTimestamp(int column) throws SQLException {
         return (Timestamp) getObject(column);
+    }
+
+    public Date getDate(String column) throws SQLException {
+        return (Date) getObject(column);
+    }
+
+    public Date getDate(int column) throws SQLException {
+        return (Date) getObject(column);
+    }
+
+    public <T> T get(Column<T> column) throws SQLException {
+        return column.get(getObject(column.getName()));
     }
 
     public PreparedStatement getPreparedStatement() {

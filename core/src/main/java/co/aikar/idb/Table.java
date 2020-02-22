@@ -1,5 +1,9 @@
 package co.aikar.idb;
 
+import co.aikar.idb.schema.Attribute;
+
+import java.util.StringJoiner;
+
 public interface Table {
 
     /**
@@ -15,6 +19,19 @@ public interface Table {
      *
      * @return table attributes with types
      */
-    String getTableAttributes();
+    default String getTableAttributes() {
+        StringJoiner joiner = new StringJoiner(",");
+        for (Attribute attribute : getAttributes()) {
+            joiner.add(attribute.toDefinition());
+        }
+        return joiner.toString();
+    }
+
+    /**
+     * Column definition of this table
+     *
+     * @return column definitions
+     */
+    Attribute[] getAttributes();
 
 }
