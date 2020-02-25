@@ -8,8 +8,16 @@ public class BooleanColumn extends AbstractColumn<Boolean> {
         return new BooleanColumn(name);
     }
 
+    public static BooleanColumn ofDefault(String name, boolean defaultValue) {
+        return new BooleanColumn(name, defaultValue);
+    }
+
     private BooleanColumn(String name) {
         super(name, "BIT(1)");
+    }
+
+    private BooleanColumn(String name, boolean defaultValue) {
+        super(name, "BIT(1)", false, String.valueOf(defaultValue), null);
     }
 
     @Override

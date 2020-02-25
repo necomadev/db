@@ -50,7 +50,7 @@ public abstract class AbstractColumn<T> implements Column<T> {
         }
 
         if (generatedAs != null) {
-            definitionBuilder.append(" GENERATED ALWAYS AS (").append(generatedAs).append(")");
+            definitionBuilder.append(" GENERATED ALWAYS AS (").append(generatedAs).append(") PERSISTENT");
         }
 
         return definitionBuilder.toString();
