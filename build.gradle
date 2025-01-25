@@ -74,20 +74,4 @@ subprojects {
         dependsOn install
         dependsOn uploadArchives
     }
-
-    if(project.hasProperty('nexusUser') && project.hasProperty('nexusPass')) {
-        uploadArchives {
-            repositories {
-                mavenDeployer {
-                    repository(url: 'http://54.37.204.9:8081/repository/pvpgym/') {
-                        authentication(userName: nexusUser, password: nexusPass)
-                    }
-
-                    snapshotRepository(url: 'http://54.37.204.9:8081/repository/pvpgym/') {
-                        authentication(userName: nexusUser, password: nexusPass)
-                    }
-                }
-            }
-        }
-    }
 }
